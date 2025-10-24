@@ -8,7 +8,7 @@ export type ScreenViewProps = ViewProps & {
 
 export function ScreenView(props: ScreenViewProps) {
     const Container = !props.hasHeader ? SafeAreaView : View;
-    const { theme } = useTheme();
+    const theme = useTheme();
 
     return (
         <Container
