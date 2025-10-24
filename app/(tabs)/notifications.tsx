@@ -1,7 +1,7 @@
 import { ScreenView } from '@/components/screen-view';
 import { Text } from 'react-native-paper';
 
-export default function ProfileScreen() {
+export default function Notifications() {
     return (
         <ScreenView style={{ justifyContent: 'center', alignItems: 'center' }}>
             <Text>Уведомления</Text>

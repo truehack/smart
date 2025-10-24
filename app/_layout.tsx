@@ -1,31 +1,28 @@
-import { useTheme } from '@/hooks/use-theme';
 import { Stack } from 'expo-router';
-import { PaperProvider } from 'react-native-paper';
+import { useColorScheme } from 'react-native';
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
+import {
+    initialWindowMetrics,
+    SafeAreaProvider,
+} from 'react-native-safe-area-context';
 
 export default function RootLayout() {
-    const theme = useTheme();
+    const colorScheme = useColorScheme();
+    const theme = colorScheme === 'dark' ? MD3DarkTheme : MD3LightTheme;
 
     return (
         <PaperProvider theme={theme}>
-            
-            <Stack
-                screenOptions={{
-                    headerStyle: {
-                        backgroundColor: theme.colors.background,
-                    },
-                    headerTintColor: theme.colors.onBackground,
-                }}
-            >
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                    name="modals/add-modal"
-                    options={{
-                        presentation: 'fullScreenModal',
-                        animation: 'fade_from_bottom',
-                        headerTitle: 'Добавить лекарство',
+            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+                <Stack
+                    screenOptions={{
+                        headerStyle: {
+                            backgroundColor: theme.colors.background,
+                        },
+                        headerTintColor: theme.colors.onBackground,
+                        headerShown: false,
                     }}
                 />
-            </Stack>
+            </SafeAreaProvider>
         </PaperProvider>
     );
 }
