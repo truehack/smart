@@ -1,12 +1,3 @@
-import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
-
-export default function Create() {
-    const router = useRouter();
-
-    useEffect(() => {
-        router.replace('/modals/add-modal');
-    }, [router]);
-
+export default function Add() {
     return null;
 }

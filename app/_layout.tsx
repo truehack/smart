@@ -1,13 +1,31 @@
+import { useTheme } from '@/hooks/use-theme';
 import { Stack } from 'expo-router';
 import { PaperProvider } from 'react-native-paper';
-import { useTheme } from '@/hooks/use-theme';
 
-export default function Layout() {
-    const { theme } = useTheme();
+export default function RootLayout() {
+    const theme = useTheme();
 
     return (
         <PaperProvider theme={theme}>
-            <Stack screenOptions={{ headerShown: false }} />
+            
+            <Stack
+                screenOptions={{
+                    headerStyle: {
+                        backgroundColor: theme.colors.background,
+                    },
+                    headerTintColor: theme.colors.onBackground,
+                }}
+            >
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                    name="modals/add-modal"
+                    options={{
+                        presentation: 'fullScreenModal',
+                        animation: 'fade_from_bottom',
+                        headerTitle: 'Добавить лекарство',
+                    }}
+                />
+            </Stack>
         </PaperProvider>
     );
 }

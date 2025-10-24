@@ -11,7 +11,12 @@ export type Tab = ScreenProps & {
 
 export const tabs: Tab[] = [
     { name: 'Расписание', path: 'schedule', icon: 'home' },
-    { name: 'Добавить', path: 'add', icon: 'plus', reroute: '/notifications' },
+    {
+        name: 'Добавить',
+        path: 'add',
+        icon: 'plus',
+        reroute: '/modals/add-modal',
+    },
     { name: 'Уведомления', path: 'notifications', icon: 'account' },
     { name: 'Настройки', path: 'settings', icon: 'cog' },
 ];
@@ -23,9 +28,9 @@ export default function TabsLayout() {
     return (
         <Tabs
             screenOptions={() => ({
+                headerShown: false,
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
-                headerShown: false,
                 tabBarStyle: {
                     backgroundColor: theme.colors.background,
                 },
