@@ -12,11 +12,11 @@ export type Tab = ScreenProps & {
 
 export default function TabsLayout() {
     const theme = useTheme();
-    const addModal = useModal();
+    const modal = useModal();
 
     const tabs: Tab[] = [
         { name: 'Расписание', path: 'schedule', icon: 'home' },
-        { name: 'Добавить', path: 'add', icon: 'plus', modal: addModal },
+        { name: 'Добавить', path: 'add', icon: 'plus', modal },
         { name: 'Уведомления', path: 'notifications', icon: 'account' },
         { name: 'Настройки', path: 'settings', icon: 'cog' },
     ];
@@ -51,28 +51,25 @@ export default function TabsLayout() {
                         listeners={
                             tab.modal
                                 ? {
-                                    tabPress: (e) => {
-                                        e.preventDefault();
-                                        tab.modal!.open();
-                                    },
-                                }
+                                      tabPress: (e) => {
+                                          e.preventDefault();
+                                          tab.modal!.open();
+                                      },
+                                  }
                                 : undefined
                         }
                     />
                 ))}
             </Tabs>
 
-            <addModal.view>
-                <Text variant="titleLarge" style={{ marginBottom: 12 }}>
-                    Добавление элемента
-                </Text>
-                <Text style={{ marginBottom: 20 }}>
+            <modal.view title="Добавить препарат">
+                <Text style={{ marginBottom: 12 }}>
                     Здесь может быть форма или любой контент
-                </Text>
-                <Button mode="contained" onPress={addModal.close}>
+                </Text> 
+                <Button mode="contained" onPress={modal.close}>
                     Закрыть
                 </Button>
-            </addModal.view>
+            </modal.view>
         </>
     );
 }
