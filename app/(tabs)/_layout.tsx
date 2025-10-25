@@ -24,6 +24,7 @@ export default function TabsLayout() {
     return (
         <>
             <Tabs
+                initialRouteName='schedule'
                 screenOptions={() => ({
                     headerShown: false,
                     tabBarActiveTintColor: theme.colors.primary,

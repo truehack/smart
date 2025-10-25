@@ -1,5 +1,5 @@
 import { useState, ReactNode, useEffect } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, ViewProps } from 'react-native';
 import { Portal, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -7,18 +7,25 @@ import Animated, {
     withTiming,
     useAnimatedStyle,
     Easing,
+    AnimatedProps,
 } from 'react-native-reanimated';
 
 export type Modal = {
     open: () => void;
     close: () => void;
-    view: ({ children }: {
+    view: ({
+        children,
+    }: {
         children: React.ReactNode;
     }) => React.JSX.Element | null;
     visible: boolean;
+};
+
+export type UseModalProps = {
+    viewProps?: AnimatedProps<ViewProps>
 }
 
-export function useModal(): Modal {
+export function useModal(props?: UseModalProps): Modal {
     const [visible, setVisible] = useState(false);
 
     const theme = useTheme();
@@ -44,7 +51,7 @@ export function useModal(): Modal {
         }
     }, [visible, offset]);
 
-    const view = ({ children }: { children: ReactNode }) => {
+    const View = ({ children }: { children: ReactNode }) => {
         const animatedStyle = useAnimatedStyle(() => ({
             transform: [{ translateY: offset.value }],
         }));
@@ -54,16 +61,27 @@ export function useModal(): Modal {
         return (
             <Portal>
                 <Animated.View
+                    {...props?.viewProps}
                     style={[
-                        styles.fullscreenContainer,
-                        animatedStyle,
                         {
-                            backgroundColor: theme.colors.background,
-                            paddingTop: insets.top + 20,
-                            paddingBottom: insets.bottom + 20,
+                            backgroundColor: theme.colors.outlineVariant,
+                            paddingTop: insets.top,
+                            paddingBottom: insets.bottom,
                             paddingLeft: insets.left + 20,
                             paddingRight: insets.right + 20,
                         },
+                        ...(Array.isArray(props?.viewProps?.style)
+                            ? props.viewProps.style
+                            : props?.viewProps?.style
+                                ? [props.viewProps.style]
+                                : []),
+                        {
+                            position: 'absolute',
+                            top: 0,
+                            bottom: 0,
+                            width: '100%',
+                        },
+                        animatedStyle,
                     ]}
                 >
                     {children}
@@ -72,14 +90,5 @@ export function useModal(): Modal {
         );
     };
 
-    return { open, close, view, visible };
-}
-
-const styles = StyleSheet.create({
-    fullscreenContainer: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        width: '100%',
-    },
-});
+    return { open, close, view: View, visible };
+} 
