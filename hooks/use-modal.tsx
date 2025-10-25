@@ -1,5 +1,5 @@
-import { useState, ReactNode, useEffect } from 'react';
-import { StyleSheet, Dimensions, ViewProps } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Dimensions, ViewProps } from 'react-native';
 import { Portal, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -13,19 +13,13 @@ import Animated, {
 export type Modal = {
     open: () => void;
     close: () => void;
-    view: ({
-        children,
-    }: {
-        children: React.ReactNode;
-    }) => React.JSX.Element | null;
     visible: boolean;
+    view: (
+        props: AnimatedProps<ViewProps>
+    ) => React.JSX.Element | null;
 };
 
-export type UseModalProps = {
-    viewProps?: AnimatedProps<ViewProps>
-}
-
-export function useModal(props?: UseModalProps): Modal {
+export function useModal(): Modal {
     const [visible, setVisible] = useState(false);
 
     const theme = useTheme();
@@ -36,22 +30,22 @@ export function useModal(props?: UseModalProps): Modal {
     const open = () => setVisible(true);
     const close = () => {
         offset.value = withTiming(screenHeight, {
-            duration: 300,
+            duration: 250,
             easing: Easing.out(Easing.inOut(Easing.ease)),
         });
-        setTimeout(() => setVisible(false), 300);
+        setTimeout(() => setVisible(false), 250);
     };
 
     useEffect(() => {
         if (visible) {
             offset.value = withTiming(0, {
-                duration: 300,
+                duration: 250,
                 easing: Easing.out(Easing.ease),
             });
         }
     }, [visible, offset]);
 
-    const View = ({ children }: { children: ReactNode }) => {
+    const View = (props: AnimatedProps<ViewProps>) => {
         const animatedStyle = useAnimatedStyle(() => ({
             transform: [{ translateY: offset.value }],
         }));
@@ -61,19 +55,19 @@ export function useModal(props?: UseModalProps): Modal {
         return (
             <Portal>
                 <Animated.View
-                    {...props?.viewProps}
+                    {...props}
                     style={[
                         {
-                            backgroundColor: theme.colors.outlineVariant,
-                            paddingTop: insets.top,
-                            paddingBottom: insets.bottom,
+                            backgroundColor: theme.colors.background,
+                            paddingTop: insets.top + 20,
+                            paddingBottom: insets.bottom + 20,
                             paddingLeft: insets.left + 20,
                             paddingRight: insets.right + 20,
                         },
-                        ...(Array.isArray(props?.viewProps?.style)
-                            ? props.viewProps.style
-                            : props?.viewProps?.style
-                                ? [props.viewProps.style]
+                        ...(Array.isArray(props.style)
+                            ? props.style
+                            : props.style
+                                ? [props.style]
                                 : []),
                         {
                             position: 'absolute',
@@ -84,11 +78,11 @@ export function useModal(props?: UseModalProps): Modal {
                         animatedStyle,
                     ]}
                 >
-                    {children}
+                    {props.children}
                 </Animated.View>
             </Portal>
         );
     };
 
     return { open, close, view: View, visible };
-} 
+}

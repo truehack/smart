@@ -7,7 +7,7 @@ import { Modal, useModal } from '@/hooks/use-modal';
 export type Tab = ScreenProps & {
     path: string;
     icon: string;
-    modal?: Modal
+    modal?: Modal;
 };
 
 export default function TabsLayout() {
@@ -24,7 +24,7 @@ export default function TabsLayout() {
     return (
         <>
             <Tabs
-                initialRouteName='schedule'
+                initialRouteName="schedule"
                 screenOptions={() => ({
                     headerShown: false,
                     tabBarActiveTintColor: theme.colors.primary,
@@ -47,7 +47,6 @@ export default function TabsLayout() {
                                     size={size}
                                 />
                             ),
-
                         }}
                         listeners={
                             tab.modal

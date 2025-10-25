@@ -12,7 +12,6 @@ export function ScreenView({ hasHeader, style, ...props }: ScreenViewProps) {
 
     return (
         <View
-            {...props}
             style={[
                 {
                     flex: 1,
@@ -24,6 +23,16 @@ export function ScreenView({ hasHeader, style, ...props }: ScreenViewProps) {
                 },
                 style,
             ]}
-        />
+        >
+            <View
+                {...props}
+                style={[
+                    {
+                        flex: 1,
+                    },
+                    style,
+                ]}
+            />
+        </View>
     );
 }
