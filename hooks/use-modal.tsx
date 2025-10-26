@@ -3,8 +3,9 @@ import {
     Dimensions,
     ViewProps,
     StyleSheet,
-    Pressable,
     View,
+    ViewStyle,
+    StyleProp,
 } from 'react-native';
 import { Portal, useTheme, Text, IconButton } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +22,8 @@ export type ModalViewProps = AnimatedProps<ViewProps> & {
     title?: string;
     mode?: 'sheet' | 'fullscreen';
     showHeader?: boolean;
+    contentStyle?: StyleProp<ViewStyle>;
+    onClose?: () => void;
 };
 
 export type Modal = {
@@ -71,15 +74,20 @@ export function useModal(): Modal {
                     {...props}
                     style={[
                         {
-                            position: 'absolute', 
+                            position: 'absolute',
                             backgroundColor: theme.colors.background,
                             paddingBottom: insets.bottom + 16,
                             borderTopLeftRadius: mode === 'sheet' ? 24 : 0,
                             borderTopRightRadius: mode === 'sheet' ? 24 : 0,
-                            outlineColor: theme.colors.outlineVariant,
-                            outlineWidth: StyleSheet.hairlineWidth + 0.2,
+                            borderWidth:
+                                mode === 'fullscreen'
+                                    ? undefined
+                                    : StyleSheet.hairlineWidth,
                             top: mode === 'fullscreen' ? 0 : undefined,
-                            paddingTop: (mode === "fullscreen" && !showHeader ? insets.top + 12 : 0),
+                            paddingTop:
+                                mode === 'fullscreen' && !showHeader
+                                    ? insets.top + 12
+                                    : 0,
                             bottom: 0,
                             width: screenWidth + 1,
                             height:
@@ -90,8 +98,8 @@ export function useModal(): Modal {
                         ...(Array.isArray(props.style)
                             ? props.style
                             : props.style
-                                ? [props.style]
-                                : []),
+                              ? [props.style]
+                              : []),
                         animatedStyle,
                     ]}
                 >
@@ -102,22 +110,42 @@ export function useModal(): Modal {
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
                                 paddingHorizontal: 20,
-                                paddingTop: (mode === 'fullscreen' ? insets.top + 12 : 12),
+                                paddingTop:
+                                    mode === 'fullscreen'
+                                        ? insets.top + 12
+                                        : 12,
                                 paddingBottom: 12,
-                                borderBottomWidth: StyleSheet.hairlineWidth + 0.2,
-                                borderColor: theme.colors.outlineVariant,
+                                borderBottomWidth: StyleSheet.hairlineWidth,
                             }}
                         >
-                            <Text variant="titleLarge">{title}</Text>
+                            <Text
+                                variant="titleLarge"
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                                style={{
+                                    flex: 1,
+                                    marginRight: 8,
+                                }}
+                            >
+                                {title}
+                            </Text>
+
                             <IconButton
                                 icon="close"
                                 size={22}
-                                onPress={close}
+                                onPress={() => {
+                                    props.onClose && props.onClose();
+                                    close();
+                                }}
                             />
                         </View>
                     )}
 
-                    <View style={{ flex: 1, padding: 20 }}>{children}</View>
+                    <View
+                        style={[{ flex: 1, padding: 20 }, props.contentStyle]}
+                    >
+                        {children}
+                    </View>
                 </Animated.View>
             </Portal>
         );

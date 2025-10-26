@@ -1,8 +1,11 @@
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { ScreenProps, Tabs } from 'expo-router';
-import { useTheme, Text, Button } from 'react-native-paper';
+import { TextInput, useTheme } from 'react-native-paper';
 import { Modal, useModal } from '@/hooks/use-modal';
+import { DatePickerModal } from 'react-native-paper-dates';
+import { useLocale } from '@/hooks/use-locale';
+import { useState } from 'react';
 
 export type Tab = ScreenProps & {
     path: string;
@@ -13,6 +16,7 @@ export type Tab = ScreenProps & {
 export default function TabsLayout() {
     const theme = useTheme();
     const modal = useModal();
+    const locale = useLocale();
 
     const tabs: Tab[] = [
         { name: 'Расписание', path: 'schedule', icon: 'home' },
@@ -20,6 +24,9 @@ export default function TabsLayout() {
         { name: 'Уведомления', path: 'notifications', icon: 'account' },
         { name: 'Настройки', path: 'settings', icon: 'cog' },
     ];
+
+    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -62,14 +69,45 @@ export default function TabsLayout() {
                 ))}
             </Tabs>
 
-            <modal.view title="Добавить препарат">
-                <Text style={{ marginBottom: 12 }}>
-                    Здесь может быть форма или любой контент
-                </Text> 
-                <Button mode="contained" onPress={modal.close}>
-                    Закрыть
-                </Button>
+            <modal.view
+                onClose={() => {
+                    setDate(undefined);
+                }}
+                title="Добавить препарат"
+                mode="fullscreen"
+                contentStyle={{ gap: 8 }}
+            >
+                <TextInput mode="outlined" label={'Название'} />
+                <TextInput
+                    mode="outlined"
+                    label={'Количество'}
+                    keyboardType="number-pad"
+                />
+                <TextInput
+                    mode="outlined"
+                    label={'Время'}
+                    value={date?.toLocaleDateString()}
+                    right={
+                        <TextInput.Icon
+                            onPress={() => setOpen(true)}
+                            icon="pen"
+                        />
+                    }
+                />
             </modal.view>
+
+            <DatePickerModal
+                allowEditing={false}
+                locale={locale}
+                mode="single"
+                visible={open}
+                onDismiss={() => setOpen(false)}
+                date={date}
+                onConfirm={(params) => {
+                    setOpen(false);
+                    setDate(params.date);
+                }}
+            />
         </>
     );
 }
