@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode, JSX } from 'react';
+import { useState, useEffect, ReactNode, JSX, useCallback } from 'react';
 import {
     Dimensions,
     ViewProps,
@@ -35,6 +35,8 @@ export type Modal = {
 
 export function useModal(): Modal {
     const [visible, setVisible] = useState(false);
+    const [onClose, setOnClose] = useState<() => void>();
+
     const theme = useTheme();
     const insets = useSafeAreaInsets();
     const screenHeight = Dimensions.get('window').height;
@@ -50,6 +52,11 @@ export function useModal(): Modal {
         setTimeout(() => setVisible(false), 250);
     };
 
+    const closeByButton = () => {
+        onClose?.();
+        close();
+    };
+
     useEffect(() => {
         if (visible) {
             offset.value = withTiming(0, {
@@ -59,8 +66,18 @@ export function useModal(): Modal {
         }
     }, [visible, offset]);
 
-    const ViewComponent = (props: ModalViewProps) => {
-        const { children, mode = 'sheet', title, showHeader = true } = props;
+    const ViewComponent = useCallback((props: ModalViewProps) => {
+        const {
+            children,
+            mode = 'sheet',
+            title,
+            showHeader = true,
+            onClose: localOnClose,
+        } = props;
+
+        useEffect(() => {
+            setOnClose(() => localOnClose);
+        }, [localOnClose]);
 
         const animatedStyle = useAnimatedStyle(() => ({
             transform: [{ translateY: offset.value }],
@@ -133,10 +150,7 @@ export function useModal(): Modal {
                             <IconButton
                                 icon="close"
                                 size={22}
-                                onPress={() => {
-                                    props.onClose && props.onClose();
-                                    close();
-                                }}
+                                onPress={closeByButton}
                             />
                         </View>
                     )}
@@ -149,7 +163,7 @@ export function useModal(): Modal {
                 </Animated.View>
             </Portal>
         );
-    };
+    }, [visible, offset, insets, theme, screenWidth, screenHeight]);
 
-    return { open, close, visible, view: ViewComponent };
+    return { open, close: closeByButton, visible, view: ViewComponent };
 }

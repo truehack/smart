@@ -1,11 +1,12 @@
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { ScreenProps, Tabs } from 'expo-router';
-import { TextInput, useTheme } from 'react-native-paper';
+import { Button, TextInput, useTheme } from 'react-native-paper';
 import { Modal, useModal } from '@/hooks/use-modal';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { useLocale } from '@/hooks/use-locale';
 import { useState } from 'react';
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 
 export type Tab = ScreenProps & {
     path: string;
@@ -14,19 +15,23 @@ export type Tab = ScreenProps & {
 };
 
 export default function TabsLayout() {
+    const AddModal = useModal();
+
     const theme = useTheme();
-    const modal = useModal();
     const locale = useLocale();
 
     const tabs: Tab[] = [
         { name: 'Расписание', path: 'schedule', icon: 'home' },
-        { name: 'Добавить', path: 'add', icon: 'plus', modal },
+        { name: 'Добавить', path: 'add', icon: 'plus', modal: AddModal },
         { name: 'Уведомления', path: 'notifications', icon: 'account' },
         { name: 'Настройки', path: 'settings', icon: 'cog' },
     ];
 
-    const [date, setDate] = useState<Date | undefined>(new Date());
-    const [open, setOpen] = useState(false);
+    const [openDatePicker, setOpenDatePicker] = useState(false);
+
+    const [date, setDate] = useState<Date | undefined>();
+    const [name, setName] = useState<string>();
+    const [count, setCount] = useState<string>();
 
     return (
         <>
@@ -58,53 +63,73 @@ export default function TabsLayout() {
                         listeners={
                             tab.modal
                                 ? {
-                                      tabPress: (e) => {
-                                          e.preventDefault();
-                                          tab.modal!.open();
-                                      },
-                                  }
+                                    tabPress: (e) => {
+                                        e.preventDefault();
+                                        tab.modal!.open();
+                                    },
+                                }
                                 : undefined
                         }
                     />
                 ))}
             </Tabs>
 
-            <modal.view
+            <AddModal.view
                 onClose={() => {
                     setDate(undefined);
+                    setName(undefined);
+                    setCount(undefined);
                 }}
                 title="Добавить препарат"
                 mode="fullscreen"
-                contentStyle={{ gap: 8 }}
+                contentStyle={{ justifyContent: 'space-between' }}
             >
-                <TextInput mode="outlined" label={'Название'} />
-                <TextInput
-                    mode="outlined"
-                    label={'Количество'}
-                    keyboardType="number-pad"
-                />
-                <TextInput
-                    mode="outlined"
-                    label={'Время'}
-                    value={date?.toLocaleDateString()}
-                    right={
-                        <TextInput.Icon
-                            onPress={() => setOpen(true)}
-                            icon="pen"
-                        />
-                    }
-                />
-            </modal.view>
+                <View style={{ gap: 8 }}>
+                    <TextInput
+                        mode="outlined"
+                        label={'Название'}
+                        value={name}
+                        onChangeText={(text) => setName(text)}
+                    />
+                    <TextInput
+                        value={count}
+                        onChangeText={(text) => setCount(text)}
+                        mode="outlined"
+                        label={'Количество'}
+                        keyboardType="number-pad"
+                    />
+                    <TouchableWithoutFeedback
+                        onPress={() => {
+                            Keyboard.dismiss();
+                            setOpenDatePicker(true);
+                        }}
+                    >
+                        <View pointerEvents="box-only">
+                            <TextInput
+                                mode="outlined"
+                                label={'Дата'}
+                                value={date?.toLocaleDateString()}
+                            />
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+                <View style={{ gap: 16 }}>
+                    <Button mode="contained">Добавить</Button>
+                    <Button mode="outlined" onPress={AddModal.close}>
+                        Отмена
+                    </Button>
+                </View>
+            </AddModal.view>
 
             <DatePickerModal
                 allowEditing={false}
                 locale={locale}
                 mode="single"
-                visible={open}
-                onDismiss={() => setOpen(false)}
+                visible={openDatePicker}
+                onDismiss={() => setOpenDatePicker(false)}
                 date={date}
                 onConfirm={(params) => {
-                    setOpen(false);
+                    setOpenDatePicker(false);
                     setDate(params.date);
                 }}
             />
