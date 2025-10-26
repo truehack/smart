@@ -15,10 +15,6 @@ export default function RootLayout() {
             <SafeAreaProvider initialMetrics={initialWindowMetrics}>
                 <Stack
                     screenOptions={{
-                        headerStyle: {
-                            backgroundColor: theme.colors.background,
-                        },
-                        headerTintColor: theme.colors.onBackground,
                         headerShown: false,
                     }}
                 />

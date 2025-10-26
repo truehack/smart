@@ -1,7 +1,6 @@
 import * as Localization from 'expo-localization';
 import { useMemo } from 'react';
 import {
-    enGB,
     ru,
     fr,
     es,
@@ -13,13 +12,12 @@ import {
     ja,
     ko,
     zh,
-    zhTW,
     registerTranslation,
+    en,
 } from 'react-native-paper-dates';
 
 const translations: Record<string, any> = {
-    'en-GB': enGB,
-    en: enGB,
+    en,
     ru,
     fr,
     es,
@@ -31,16 +29,15 @@ const translations: Record<string, any> = {
     ja,
     ko,
     zh,
-    'zh-TW': zhTW,
 };
 
-export function useDatePickerLocale() {
+export function useLocale() {
     const localeObj = Localization.getLocales()[0];
     const tag = localeObj.languageTag;
     const baseLang = tag.split('-')[0];
 
     const selectedLocale =
-        translations[tag] || translations[baseLang] || translations['en-GB'];
+        translations[tag] || translations[baseLang] || translations['ru'];
 
     useMemo(() => {
         registerTranslation(tag, selectedLocale);
