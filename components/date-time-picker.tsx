@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from 'react-native-paper';
+import { Button, useTheme } from 'react-native-paper';
 import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
-import { useTheme } from 'react-native-paper';
+
 import { useDatePickerLocale } from '@/hooks/use-date-picker-locale';
 
 export type DateTimeValue = {
@@ -25,20 +25,25 @@ export function DateTimePickerModal({
 
     const [date, setDate] = useState<Date | null>(value?.date ?? null);
     const [time, setTime] = useState<{ hours: number; minutes: number } | null>(
-        value?.time ?? null
+        value?.time ?? null,
     );
 
     const [dateVisible, setDateVisible] = useState(false);
     const [timeVisible, setTimeVisible] = useState(false);
-    
+
     const handleConfirmDate = (params: any) => {
         setDate(params.date);
         setDateVisible(false);
-        // Показываем выбор времени после выбора даты
         setTimeout(() => setTimeVisible(true), 300);
     };
 
-    const handleConfirmTime = ({ hours, minutes }: { hours: number; minutes: number }) => {
+    const handleConfirmTime = ({
+        hours,
+        minutes,
+    }: {
+        hours: number;
+        minutes: number;
+    }) => {
         const newTime = { hours, minutes };
         setTime(newTime);
         setTimeVisible(false);

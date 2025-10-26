@@ -3,10 +3,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ScreenProps, Tabs } from 'expo-router';
 import { Button, TextInput, useTheme } from 'react-native-paper';
 import { Modal, useModal } from '@/hooks/use-modal';
-import { DatePickerModal } from 'react-native-paper-dates';
-import { useLocale } from '@/hooks/use-locale';
 import { useState } from 'react';
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import { View } from 'react-native';
 
 export type Tab = ScreenProps & {
     path: string;
@@ -15,10 +13,10 @@ export type Tab = ScreenProps & {
 };
 
 export default function TabsLayout() {
-    const AddModal = useModal();
+    const [ visible, setVisible ] = useState(false)
+    const AddModal = useModal({ visible, setVisible });
 
     const theme = useTheme();
-    const locale = useLocale();
 
     const tabs: Tab[] = [
         { name: 'Расписание', path: 'schedule', icon: 'home' },
@@ -27,9 +25,6 @@ export default function TabsLayout() {
         { name: 'Настройки', path: 'settings', icon: 'cog' },
     ];
 
-    const [openDatePicker, setOpenDatePicker] = useState(false);
-
-    const [date, setDate] = useState<Date | undefined>();
     const [name, setName] = useState<string>();
     const [count, setCount] = useState<string>();
 
@@ -63,11 +58,11 @@ export default function TabsLayout() {
                         listeners={
                             tab.modal
                                 ? {
-                                    tabPress: (e) => {
-                                        e.preventDefault();
-                                        tab.modal!.open();
-                                    },
-                                }
+                                      tabPress: (e) => {
+                                          e.preventDefault();
+                                          tab.modal!.open();
+                                      },
+                                  }
                                 : undefined
                         }
                     />
@@ -76,7 +71,6 @@ export default function TabsLayout() {
 
             <AddModal.view
                 onClose={() => {
-                    setDate(undefined);
                     setName(undefined);
                     setCount(undefined);
                 }}
@@ -98,20 +92,6 @@ export default function TabsLayout() {
                         label={'Количество'}
                         keyboardType="number-pad"
                     />
-                    <TouchableWithoutFeedback
-                        onPress={() => {
-                            Keyboard.dismiss();
-                            setOpenDatePicker(true);
-                        }}
-                    >
-                        <View pointerEvents="box-only">
-                            <TextInput
-                                mode="outlined"
-                                label={'Дата'}
-                                value={date?.toLocaleDateString()}
-                            />
-                        </View>
-                    </TouchableWithoutFeedback>
                 </View>
                 <View style={{ gap: 16 }}>
                     <Button mode="contained">Добавить</Button>
@@ -120,19 +100,6 @@ export default function TabsLayout() {
                     </Button>
                 </View>
             </AddModal.view>
-
-            <DatePickerModal
-                allowEditing={false}
-                locale={locale}
-                mode="single"
-                visible={openDatePicker}
-                onDismiss={() => setOpenDatePicker(false)}
-                date={date}
-                onConfirm={(params) => {
-                    setOpenDatePicker(false);
-                    setDate(params.date);
-                }}
-            />
         </>
     );
 }
