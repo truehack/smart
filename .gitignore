@@ -1,22 +1,21 @@
+# Node
 node_modules/
+npm-debug.log
+yarn-error.log
+
+# Expo
 .expo/
-dist/
+.expo-shared/
+
+# Build outputs
+android/
+ios/
 web-build/
-expo-env.d.ts
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-.metro-health-check*
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+dist/
+build/
+
+# Editor / system files
 .DS_Store
-*.pem
-.env*.local
-*.tsbuildinfo
-app-example
-expo-env.d.ts
+.vscode/
+.idea/
+.env
